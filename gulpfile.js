@@ -10,6 +10,9 @@ var gulp = require('gulp'),
     koutoSwiss = require('kouto-swiss'),
     /* Rupture */
     rupture = require('rupture'),
+    /* Remove Comments */
+    stripCssComments = require('gulp-strip-css-comments'),
+    cssnano = require('gulp-cssnano'),
     /* JS */
     /* Compress */
     uglify = require('gulp-uglify'),
@@ -65,25 +68,24 @@ gulp.task('stylus', function() {
         .pipe(plumber())
         .pipe(stylus({
             'include css': true,
-            use: [koutoSwiss(), prefixer(), rupture()],
-            compress: true
+            use: [koutoSwiss(), prefixer(), rupture()]
         }))
-        .pipe(browserSync.reload({
-            stream: true
-        }))
+        .pipe(plumber())
+        .pipe(stripCssComments())
+        .pipe(cssnano())
         .pipe(gulp.dest('./css/'));
 });
 /* Server BrowserSync Init */
 gulp.task('sync', function() {
-    browserSync.init(["*.php", "js/*.js", "css/*.css", "*.html"], {
+    browserSync.init(["*.php", "js/main.js", "css/style.css", "*.html"], {
         proxy: 'URL',
-        ghostMode: true,
-        notify: false,
+        ghostMode: false,
+        notify: true,
     });
 });
 /* Image Compress */
 gulp.task('imagemin', function() {
-    return gulp.src('./assets/images/logo/*.{jpg,png,gif}')
+    return gulp.src('./assets/images/compress/*.{jpg,png,gif}')
         .pipe(plumber())
         .pipe(imagemin({
             optimizationLevel: 5,
@@ -129,6 +131,7 @@ gulp.task('deploy', function() {
         'js/**',
         'fonts/**',
         'images/**',
+        'video/**',
         '*.php',
         '.htaccess',
         '*.html'
