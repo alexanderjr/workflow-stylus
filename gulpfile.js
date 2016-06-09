@@ -35,7 +35,9 @@ var gulp = require('gulp'),
     gutil = require('gulp-util'),
     ftp = require('vinyl-ftp'),
     /* Plumber */
-    plumber = require("gulp-plumber");
+    plumber = require("gulp-plumber"),
+    /* Clear */
+    clean = require('gulp-clean');
 /* Bower Config */
 var config = {
     bowerDir: './bower_components/',
@@ -101,7 +103,7 @@ gulp.task('sprite', function() {
         imgName: spriteName,
         cssName: '_sprite.styl',
         padding: 4,
-        imgPath: '/images/sprite/'+spriteName,
+        imgPath: '/images/sprite/' + spriteName,
     }));
 
     var cssStream = spriteData.css
@@ -147,6 +149,25 @@ gulp.task('deploy', function() {
         .pipe(conn.newer('/')) // only upload newer files 
         .pipe(conn.dest('/'));
 
+});
+/* Clear Initialize Files */
+gulp.task('clear', function() {
+    return gulp.src('README.md', {
+            read: false
+        })
+        .pipe(clean());
+});
+/* Clear WordPress Files */
+gulp.task('clear-wp', function() {
+    var remove = [
+        'README.md',
+        '.htaccess',
+        'robots.txt'
+    ];
+    return gulp.src(remove, {
+            read: false
+        })
+        .pipe(clean());
 });
 /* Watch */
 gulp.task('default', function() {
